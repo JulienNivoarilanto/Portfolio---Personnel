@@ -1,0 +1,82 @@
+{
+  "entities": {
+    "Project": {
+      "title": "Project",
+      "description": "A portfolio project showcase entity",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier" },
+        "title": { "type": "string", "description": "Project title" },
+        "description": { "type": "string", "description": "Short project summary" },
+        "fullDescription": { "type": "string", "description": "Full long description" },
+        "tags": { "type": "array", "description": "Tech stack tags" },
+        "imageUrl": { "type": "string", "description": "Primary preview image URL" },
+        "extraImages": { "type": "array", "description": "Additional project gallery image URLs" },
+        "githubUrl": { "type": "string", "description": "GitHub repository URL" },
+        "liveUrl": { "type": "string", "description": "Live production demo URL" },
+        "codeSnippet": { "type": "string", "description": "Code snippet preview" },
+        "codeLanguage": { "type": "string", "description": "Code language" },
+        "codeLanguages": { "type": "array", "description": "List of languages" },
+        "updatedAt": { "type": "string", "description": "Last update timestamp" }
+      },
+      "required": ["title", "description", "imageUrl"]
+    },
+    "Skill": {
+      "title": "Skill",
+      "description": "Developer technical skill",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier" },
+        "name": { "type": "string", "description": "Skill name" },
+        "category": { "type": "string", "description": "Skill category" },
+        "iconUrl": { "type": "string", "description": "Skill icon SVG/image URL" },
+        "updatedAt": { "type": "string", "description": "Last update timestamp" }
+      },
+      "required": ["name", "category"]
+    },
+    "Testimonial": {
+      "title": "Testimonial",
+      "description": "Client or collaborator recommendation",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier" },
+        "name": { "type": "string", "description": "Author name" },
+        "role": { "type": "string", "description": "Author title or company" },
+        "content": { "type": "string", "description": "Recommendation text" },
+        "avatarUrl": { "type": "string", "description": "Author avatar image URL" },
+        "updatedAt": { "type": "string", "description": "Last update timestamp" }
+      },
+      "required": ["name", "role", "content"]
+    },
+    "SiteConfig": {
+      "title": "SiteConfig",
+      "description": "Global portfolio configuration and legal details",
+      "type": "object",
+      "properties": {
+        "personalInfo": { "type": "object", "description": "Personal and hero information" },
+        "themeSettings": { "type": "object", "description": "Theme and dark mode settings" },
+        "legalInfo": { "type": "object", "description": "Legal status and company info" },
+        "sectionsVisibility": { "type": "object", "description": "Visibility of optional sections" },
+        "updatedAt": { "type": "string", "description": "Last update timestamp" }
+      }
+    }
+  },
+  "firestore": {
+    "/projects/{projectId}": {
+      "schema": "Project",
+      "description": "Collection of portfolio projects"
+    },
+    "/skills/{skillId}": {
+      "schema": "Skill",
+      "description": "Collection of technical skills"
+    },
+    "/testimonials/{testimonialId}": {
+      "schema": "Testimonial",
+      "description": "Collection of client testimonials"
+    },
+    "/config/{configId}": {
+      "schema": "SiteConfig",
+      "description": "Portfolio global configuration documents"
+    }
+  }
+}

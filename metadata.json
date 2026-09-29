@@ -1,0 +1,8 @@
+{
+  "name": "Remix Portfolio Personnel",
+  "description": "Un portfolio moderne, responsive et minimaliste présentant mes projets, expériences, témoignages et articles de blog.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
