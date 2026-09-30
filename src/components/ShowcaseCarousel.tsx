@@ -1,36 +1,34 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useStore } from '../store';
 import { SvgRenderer } from './SvgRenderer';
+import { CarouselItem } from '../types';
 
-export function ShowcaseCarousel() {
-  const siteConfig = useStore((state) => state.siteConfig);
-  const carouselSettings = siteConfig?.carouselSettings;
-  const isEnabled = (siteConfig?.sectionsVisibility?.carousel !== false) && (carouselSettings?.enabled !== false);
-  const items = carouselSettings?.items || [];
-  
-  // Slide duration in seconds (defaults to 5s if not set or <= 0)
-  const durationSeconds = Math.max(2, carouselSettings?.slideDuration || 5);
+interface CarouselInnerProps {
+  items: CarouselItem[];
+  durationSeconds: number;
+}
 
-  // ALL HOOKS MUST RUN UNCONDITIONALLY AT THE TOP LEVEL (Prevents React Error #310)
+/**
+ * Inner component that only mounts and runs when items are available.
+ * Guarantees 100% deterministic, constant hook execution count (prevents React Error #310).
+ */
+function CarouselInner({ items, durationSeconds }: CarouselInnerProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState<'left' | 'right'>('right');
   const [isPaused, setIsPaused] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
 
-  // Ensure index remains in bounds if items array changes
-  const safeIndex = (items.length > 0 && currentIndex < items.length) ? currentIndex : 0;
-  const currentItem = items.length > 0 ? items[safeIndex] : null;
+  const safeIndex = (currentIndex < items.length && currentIndex >= 0) ? currentIndex : 0;
+  const currentItem = items[safeIndex];
 
   const handleNext = useCallback(() => {
-    if (items.length === 0) return;
     setDirection('right');
     setCurrentIndex((prev) => (prev + 1) % items.length);
   }, [items.length]);
 
   const handlePrev = useCallback(() => {
-    if (items.length === 0) return;
     setDirection('left');
     setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
   }, [items.length]);
@@ -40,24 +38,22 @@ export function ShowcaseCarousel() {
     setCurrentIndex(index);
   }, [safeIndex]);
 
-  // Clean auto-slide effect
   useEffect(() => {
-    if (!isEnabled || items.length <= 1 || isPaused) return;
+    if (items.length <= 1 || isPaused) return;
 
     const interval = setInterval(() => {
       handleNext();
     }, durationSeconds * 1000);
 
     return () => clearInterval(interval);
-  }, [isEnabled, durationSeconds, isPaused, items.length, handleNext]);
+  }, [durationSeconds, isPaused, items.length, handleNext]);
 
-  // Touch handlers for mobile swipe
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStart(e.targetTouches[0].clientX);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (touchStart === null || items.length === 0) return;
+    if (touchStart === null) return;
     const currentTouch = e.targetTouches[0].clientX;
     const diff = touchStart - currentTouch;
 
@@ -74,8 +70,7 @@ export function ShowcaseCarousel() {
     setTouchStart(null);
   };
 
-  // If disabled, has no items or no active item, render nothing (AFTER ALL HOOKS)
-  if (!isEnabled || items.length === 0 || !currentItem) {
+  if (!currentItem) {
     return null;
   }
 
@@ -161,7 +156,7 @@ export function ShowcaseCarousel() {
               <button
                 onClick={handlePrev}
                 aria-label="Illustration précédente"
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-black/10 dark:border-white/10 bg-white/60 dark:bg-zinc-900/60 flex items-center justify-center hover:bg-black/10 dark:hover:bg-white/10 transition-colors backdrop-blur-md active:scale-95 shadow-sm"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-black/10 dark:border-white/10 bg-white/60 dark:bg-zinc-900/60 flex items-center justify-center hover:bg-black/10 dark:hover:bg-white/10 transition-colors backdrop-blur-md active:scale-95 shadow-sm cursor-pointer"
               >
                 <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 opacity-70" />
               </button>
@@ -172,7 +167,7 @@ export function ShowcaseCarousel() {
                     key={idx}
                     onClick={() => handleGoTo(idx)}
                     aria-label={`Aller au slide ${idx + 1}`}
-                    className={`h-2 transition-all duration-300 rounded-full ${
+                    className={`h-2 transition-all duration-300 rounded-full cursor-pointer ${
                       idx === safeIndex
                         ? 'w-7 sm:w-8 bg-zinc-900 dark:bg-white shadow-sm'
                         : 'w-2 bg-black/20 dark:bg-white/20 hover:bg-black/40 dark:hover:bg-white/40'
@@ -184,7 +179,7 @@ export function ShowcaseCarousel() {
               <button
                 onClick={handleNext}
                 aria-label="Illustration suivante"
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-black/10 dark:border-white/10 bg-white/60 dark:bg-zinc-900/60 flex items-center justify-center hover:bg-black/10 dark:hover:bg-white/10 transition-colors backdrop-blur-md active:scale-95 shadow-sm"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-black/10 dark:border-white/10 bg-white/60 dark:bg-zinc-900/60 flex items-center justify-center hover:bg-black/10 dark:hover:bg-white/10 transition-colors backdrop-blur-md active:scale-95 shadow-sm cursor-pointer"
               >
                 <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 opacity-70" />
               </button>
@@ -194,4 +189,23 @@ export function ShowcaseCarousel() {
       </div>
     </section>
   );
+}
+
+/**
+ * Root ShowcaseCarousel component.
+ * Uses a single hook (`useStore`) and delegates rendering to CarouselInner.
+ * Guarantees zero possibility of hook count mismatches.
+ */
+export function ShowcaseCarousel() {
+  const siteConfig = useStore((state) => state.siteConfig);
+  const carouselSettings = siteConfig?.carouselSettings;
+  const isEnabled = (siteConfig?.sectionsVisibility?.carousel !== false) && (carouselSettings?.enabled !== false);
+  const items = carouselSettings?.items || [];
+  const durationSeconds = Math.max(2, carouselSettings?.slideDuration || 5);
+
+  if (!isEnabled || items.length === 0) {
+    return null;
+  }
+
+  return <CarouselInner items={items} durationSeconds={durationSeconds} />;
 }

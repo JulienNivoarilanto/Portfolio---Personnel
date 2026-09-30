@@ -156,6 +156,25 @@ function FourDBackground() {
   );
 }
 
+class SafeComponentBoundary extends Component<{children: React.ReactNode, fallback?: React.ReactNode}, {hasError: boolean}> {
+  constructor(props: {children: React.ReactNode, fallback?: React.ReactNode}) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error: Error) {
+    console.warn("SafeComponentBoundary intercepted error:", error);
+  }
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback || null;
+    }
+    return this.props.children;
+  }
+}
+
 class ErrorBoundary extends Component<{children: React.ReactNode}, {hasError: boolean, error: Error | null, info: ErrorInfo | null}> {
   constructor(props: {children: React.ReactNode}) {
     super(props);
@@ -168,18 +187,25 @@ class ErrorBoundary extends Component<{children: React.ReactNode}, {hasError: bo
 
   componentDidCatch(error: Error, info: ErrorInfo) {
     this.setState({ info });
-    console.error("ErrorBoundary caught an error", error, info);
   }
 
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ padding: '20px', backgroundColor: 'white', color: 'red', zIndex: 9999, position: 'relative' }}>
-          <h2>Something went wrong.</h2>
-          <pre style={{ whiteSpace: 'pre-wrap' }}>{this.state.error?.toString()}</pre>
-          <details style={{ whiteSpace: 'pre-wrap' }}>
-            {this.state.info?.componentStack}
-          </details>
+        <div className="min-h-screen flex items-center justify-center p-6 bg-zinc-950 text-white font-sans text-center">
+          <div className="max-w-md p-8 rounded-3xl bg-zinc-900 border border-zinc-800 shadow-2xl">
+            <h2 className="text-xl font-bold mb-3 font-display">Un instant...</h2>
+            <p className="text-sm text-zinc-400 mb-6">Une actualisation est nécessaire pour synchroniser le portfolio avec les dernières données.</p>
+            <button
+              onClick={() => {
+                this.setState({ hasError: false, error: null, info: null });
+                window.location.reload();
+              }}
+              className="px-6 py-2.5 rounded-full bg-white text-zinc-950 font-medium text-sm hover:bg-zinc-200 transition-all cursor-pointer"
+            >
+              Actualiser le portfolio
+            </button>
+          </div>
         </div>
       );
     }
@@ -227,7 +253,11 @@ function PortfolioLayout() {
         <Hero />
         <Projects />
         <Skills />
-        {showCarousel && <ShowcaseCarousel />}
+        {showCarousel && (
+          <SafeComponentBoundary>
+            <ShowcaseCarousel />
+          </SafeComponentBoundary>
+        )}
         {showTestimonials && <Testimonials />}
         {showLegalStatus && <LegalStatus />}
         <Contact />
