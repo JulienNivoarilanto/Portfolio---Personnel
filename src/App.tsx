@@ -192,7 +192,9 @@ function PortfolioLayout() {
   const theme = siteConfig?.themeSettings?.activeTheme || 'default';
   const showTestimonials = siteConfig?.sectionsVisibility?.testimonials !== false;
   const showLegalStatus = siteConfig?.sectionsVisibility?.legalStatus !== false;
-  const showCarousel = siteConfig?.sectionsVisibility?.carousel !== false && siteConfig?.carouselSettings?.enabled !== false;
+  const showCarousel = siteConfig?.sectionsVisibility?.carousel !== false && 
+    siteConfig?.carouselSettings?.enabled !== false &&
+    Boolean(siteConfig?.carouselSettings?.items && siteConfig.carouselSettings.items.length > 0);
 
   const getThemeClasses = () => {
     switch (theme) {
