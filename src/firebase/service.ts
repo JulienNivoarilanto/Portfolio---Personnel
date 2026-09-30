@@ -40,13 +40,11 @@ export async function initAndMigrateFirebase(): Promise<void> {
     const cSnap = await getDoc(doc(db, 'config', 'site'));
     if (!cSnap.exists()) {
       await setDoc(doc(db, 'config', 'site'), { ...defaultSiteConfig, updatedAt: new Date().toISOString() });
-      console.log('[Firebase] Initialized default site configuration.');
     }
 
-    console.log('[Firebase] Firestore initialized and synchronized without mock data.');
     migrationExecuted = true;
   } catch (error) {
-    console.warn('[Firebase] Notice while initializing Firestore:', error);
+    // Silent catch
   }
 }
 
@@ -79,9 +77,7 @@ export function subscribeToProjects(onUpdate: (projects: Project[]) => void): Un
       return String(timeB).localeCompare(String(timeA));
     });
     onUpdate(list);
-  }, (err) => {
-    console.warn('[Firebase] Projects sync error:', err);
-  });
+  }, () => {});
 }
 
 export function subscribeToSkills(onUpdate: (skills: Skill[]) => void): Unsubscribe {
@@ -105,9 +101,7 @@ export function subscribeToSkills(onUpdate: (skills: Skill[]) => void): Unsubscr
       return (a.name || '').localeCompare(b.name || '');
     });
     onUpdate(list);
-  }, (err) => {
-    console.warn('[Firebase] Skills sync error:', err);
-  });
+  }, () => {});
 }
 
 export function subscribeToTestimonials(onUpdate: (testimonials: Testimonial[]) => void): Unsubscribe {
@@ -122,9 +116,7 @@ export function subscribeToTestimonials(onUpdate: (testimonials: Testimonial[]) 
       });
     });
     onUpdate(list);
-  }, (err) => {
-    console.warn('[Firebase] Testimonials sync error:', err);
-  });
+  }, () => {});
 }
 
 export function subscribeToSiteConfig(onUpdate: (config: SiteConfig) => void): Unsubscribe {
@@ -132,9 +124,7 @@ export function subscribeToSiteConfig(onUpdate: (config: SiteConfig) => void): U
     if (snapshot.exists()) {
       onUpdate(snapshot.data() as SiteConfig);
     }
-  }, (err) => {
-    console.warn('[Firebase] SiteConfig sync error:', err);
-  });
+  }, () => {});
 }
 
 /**
@@ -174,7 +164,6 @@ async function safeFirestoreWrite<T>(promise: Promise<T>, timeoutMs = 4000): Pro
     return result;
   } catch (err) {
     clearTimeout(timer);
-    console.warn('[Firestore] Write warning:', err);
     return null;
   }
 }
@@ -338,9 +327,7 @@ export function subscribeToMessages(onUpdate: (messages: ContactMessage[]) => vo
     });
     list.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
     onUpdate(list);
-  }, (err) => {
-    console.warn('[Firebase] Messages sync error:', err);
-  });
+  }, () => {});
 }
 
 export async function firestoreDeleteMessage(id: string): Promise<void> {

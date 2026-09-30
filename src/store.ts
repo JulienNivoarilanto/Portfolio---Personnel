@@ -33,7 +33,6 @@ const safeStorage = {
     try {
       return localStorage.getItem(name);
     } catch (e) {
-      console.warn('localStorage is not available:', e);
       return null;
     }
   },
@@ -41,15 +40,13 @@ const safeStorage = {
     try {
       localStorage.setItem(name, value);
     } catch (e) {
-      console.warn('localStorage is not available:', e);
-    }
+      }
   },
   removeItem: (name: string): void => {
     try {
       localStorage.removeItem(name);
     } catch (e) {
-      console.warn('localStorage is not available:', e);
-    }
+      }
   },
 };
 
@@ -113,8 +110,7 @@ export const useStore = create<AppState>()(
           }
         });
         firestoreUpdateProject(id, updated).catch((e) => {
-          console.warn('[Firebase] Background update notice:', e);
-        });
+          });
       },
 
       updateSkill: async (id, updated) => {
@@ -132,8 +128,7 @@ export const useStore = create<AppState>()(
           }
         });
         firestoreUpdateSkill(id, updated).catch((e) => {
-          console.warn('[Firebase] Background update notice:', e);
-        });
+          });
       },
 
       updateTestimonial: async (id, updated) => {
@@ -151,8 +146,7 @@ export const useStore = create<AppState>()(
           }
         });
         firestoreUpdateTestimonial(id, updated).catch((e) => {
-          console.warn('[Firebase] Background update notice:', e);
-        });
+          });
       },
       
       addProject: async (project) => {
@@ -169,8 +163,7 @@ export const useStore = create<AppState>()(
           };
         });
         firestoreAddProject(withId).catch((e) => {
-          console.warn('[Firebase] Background add notice:', e);
-        });
+          });
       },
 
       addSkill: async (skill) => {
@@ -187,8 +180,7 @@ export const useStore = create<AppState>()(
           };
         });
         firestoreAddSkill(withId).catch((e) => {
-          console.warn('[Firebase] Background add notice:', e);
-        });
+          });
       },
 
       addTestimonial: async (testimonial) => {
@@ -205,8 +197,7 @@ export const useStore = create<AppState>()(
           };
         });
         firestoreAddTestimonial(withId).catch((e) => {
-          console.warn('[Firebase] Background add notice:', e);
-        });
+          });
       },
       
       deleteProject: async (id) => {
@@ -214,8 +205,7 @@ export const useStore = create<AppState>()(
           projects: state.projects.filter(p => p.id !== id)
         }));
         firestoreDeleteProject(id).catch((e) => {
-          console.warn('[Firebase] Background delete notice:', e);
-        });
+          });
       },
 
       deleteSkill: async (id) => {
@@ -223,8 +213,7 @@ export const useStore = create<AppState>()(
           skills: state.skills.filter(s => s.id !== id)
         }));
         firestoreDeleteSkill(id).catch((e) => {
-          console.warn('[Firebase] Background delete notice:', e);
-        });
+          });
       },
 
       deleteTestimonial: async (id) => {
@@ -232,8 +221,7 @@ export const useStore = create<AppState>()(
           testimonials: state.testimonials.filter(t => t.id !== id)
         }));
         firestoreDeleteTestimonial(id).catch((e) => {
-          console.warn('[Firebase] Background delete notice:', e);
-        });
+          });
       },
 
       updatePersonalInfo: async (updated) => {
@@ -244,8 +232,7 @@ export const useStore = create<AppState>()(
         };
         set({ siteConfig: newConfig });
         firestoreSaveSiteConfig(newConfig).catch((e) => {
-          console.warn('[Firebase] Background update notice:', e);
-        });
+          });
       },
 
       updateThemeSettings: async (updated) => {
@@ -256,8 +243,7 @@ export const useStore = create<AppState>()(
         };
         set({ siteConfig: newConfig });
         firestoreSaveSiteConfig(newConfig).catch((e) => {
-          console.warn('[Firebase] Background update notice:', e);
-        });
+          });
       },
 
       updateLegalInfo: async (updated) => {
@@ -268,8 +254,7 @@ export const useStore = create<AppState>()(
         };
         set({ siteConfig: newConfig });
         firestoreSaveSiteConfig(newConfig).catch((e) => {
-          console.warn('[Firebase] Background update notice:', e);
-        });
+          });
       },
 
       updateSectionsVisibility: async (updated) => {
@@ -283,8 +268,7 @@ export const useStore = create<AppState>()(
         };
         set({ siteConfig: newConfig });
         firestoreSaveSiteConfig(newConfig).catch((e) => {
-          console.warn('[Firebase] Background update notice:', e);
-        });
+          });
       },
 
       reorderProjects: async (orderedProjects) => {
@@ -292,8 +276,7 @@ export const useStore = create<AppState>()(
         set({ projects: indexed });
         const orders = indexed.map(p => ({ id: p.id, order: p.order ?? 0 }));
         firestoreBatchUpdateProjectOrders(orders).catch((e) => {
-          console.warn('[Firebase] Background reorder projects notice:', e);
-        });
+          });
       },
 
       setProjectsLayout: async (layout) => {
@@ -308,8 +291,7 @@ export const useStore = create<AppState>()(
         };
         set({ siteConfig: newConfig });
         firestoreSaveSiteConfig(newConfig).catch((e) => {
-          console.warn('[Firebase] Background update projects layout notice:', e);
-        });
+          });
       },
 
       reorderSkills: async (orderedSkills) => {
@@ -317,8 +299,7 @@ export const useStore = create<AppState>()(
         set({ skills: indexed });
         const orders = indexed.map(s => ({ id: s.id, order: s.order ?? 0, category: s.category }));
         firestoreBatchUpdateSkillOrders(orders).catch((e) => {
-          console.warn('[Firebase] Background reorder skills notice:', e);
-        });
+          });
       },
 
       updateCategoryOrder: async (categoryOrder) => {
@@ -332,8 +313,7 @@ export const useStore = create<AppState>()(
         };
         set({ siteConfig: newConfig });
         firestoreSaveSiteConfig(newConfig).catch((e) => {
-          console.warn('[Firebase] Background update category order notice:', e);
-        });
+          });
       },
 
       updateCarouselSettings: async (updated) => {
@@ -349,8 +329,7 @@ export const useStore = create<AppState>()(
         };
         set({ siteConfig: newConfig });
         firestoreSaveSiteConfig(newConfig).catch((e) => {
-          console.warn('[Firebase] Background update carousel notice:', e);
-        });
+          });
       },
 
       addCarouselItem: async (item) => {
@@ -374,8 +353,7 @@ export const useStore = create<AppState>()(
         };
         set({ siteConfig: newConfig });
         firestoreSaveSiteConfig(newConfig).catch((e) => {
-          console.warn('[Firebase] Background add carousel item notice:', e);
-        });
+          });
       },
 
       updateCarouselItem: async (id, updated) => {
@@ -392,8 +370,7 @@ export const useStore = create<AppState>()(
         };
         set({ siteConfig: newConfig });
         firestoreSaveSiteConfig(newConfig).catch((e) => {
-          console.warn('[Firebase] Background update carousel item notice:', e);
-        });
+          });
       },
 
       deleteCarouselItem: async (id) => {
@@ -410,8 +387,7 @@ export const useStore = create<AppState>()(
         };
         set({ siteConfig: newConfig });
         firestoreSaveSiteConfig(newConfig).catch((e) => {
-          console.warn('[Firebase] Background delete carousel item notice:', e);
-        });
+          });
       },
 
       reorderCarouselItems: async (items) => {
@@ -428,8 +404,7 @@ export const useStore = create<AppState>()(
         };
         set({ siteConfig: newConfig });
         firestoreSaveSiteConfig(newConfig).catch((e) => {
-          console.warn('[Firebase] Background reorder carousel notice:', e);
-        });
+          });
       },
     }),
     {
@@ -506,7 +481,6 @@ export function initFirebaseSync() {
       }
     });
   }).catch((err) => {
-    console.warn('[Firebase] Initialization notice:', err);
     useStore.setState({ isLoading: false });
   });
 }

@@ -12,10 +12,12 @@ import { Testimonials } from './components/Testimonials';
 import { LegalStatus } from './components/LegalStatus';
 import { Contact } from './components/Contact';
 import { Footer } from './components/Footer';
-import { AdminLogin } from './components/admin/AdminLogin';
-import { AdminDashboard } from './components/admin/AdminDashboard';
 import { useStore, initFirebaseSync } from './store';
 import { Toaster } from 'sonner';
+
+// Code-split admin modules into isolated chunks: public visitors will never load admin code
+const AdminLogin = React.lazy(() => import('./components/admin/AdminLogin').then(m => ({ default: m.AdminLogin })));
+const AdminDashboard = React.lazy(() => import('./components/admin/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
 
 function FourDBackground() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -282,8 +284,22 @@ export default function App() {
         <AdminShortcutAndSessionWatcher />
         <Routes>
           <Route path="/" element={<PortfolioLayout />} />
-          <Route path="/admin-nj" element={<AdminLogin />} />
-          <Route path="/admin-nj/dashboard/*" element={<AdminDashboard />} />
+          <Route 
+            path="/admin-nj" 
+            element={
+              <React.Suspense fallback={<div className="min-h-screen bg-zinc-950" />}>
+                <AdminLogin />
+              </React.Suspense>
+            } 
+          />
+          <Route 
+            path="/admin-nj/dashboard/*" 
+            element={
+              <React.Suspense fallback={<div className="min-h-screen bg-zinc-950" />}>
+                <AdminDashboard />
+              </React.Suspense>
+            } 
+          />
         </Routes>
       </Router>
     </ErrorBoundary>

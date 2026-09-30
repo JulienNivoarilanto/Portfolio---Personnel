@@ -22,11 +22,9 @@ export const storage = getStorage(app);
 export async function testConnection(): Promise<boolean> {
   try {
     await getDocFromServer(doc(db, 'test', 'connection'));
-    console.log('[Firebase] Connection validated successfully.');
     return true;
   } catch (error) {
     if (error instanceof Error && error.message.includes('the client is offline')) {
-      console.warn('[Firebase] Client is offline or database initializing.');
       return false;
     }
     // Normal for test document not to exist yet

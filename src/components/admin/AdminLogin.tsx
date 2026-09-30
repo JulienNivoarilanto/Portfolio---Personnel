@@ -42,14 +42,11 @@ export function AdminLogin() {
       
       try {
         sessionStorage.setItem('adminToken', userCredential.user.uid);
-      } catch (e) {
-        console.warn('sessionStorage not available', e);
-      }
+      } catch (e) {}
       
       toast.success('Connexion réussie');
       navigate('/admin-nj/dashboard');
     } catch (firebaseErr: any) {
-      console.warn('[Firebase Auth] Erreur de connexion:', firebaseErr?.code || firebaseErr);
       const code = firebaseErr?.code;
       
       if (

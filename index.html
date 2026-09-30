@@ -7,6 +7,20 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+      (function() {
+        // Block right click immediately before page parse
+        document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; }, true);
+        // Neutralize console output immediately
+        try {
+          var noop = function() {};
+          var methods = ['log', 'debug', 'info', 'warn', 'error', 'dir', 'table', 'trace'];
+          for (var i = 0; i < methods.length; i++) {
+            try { console[methods[i]] = noop; } catch(err) {}
+          }
+        } catch(e) {}
+      })();
+    </script>
   </head>
   <body class="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50 antialiased selection:bg-zinc-900 selection:text-white dark:selection:bg-white dark:selection:text-zinc-900 overflow-x-hidden">
     <div id="root"></div>
