@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr" class="scroll-smooth">
+<html lang="fr" class="scroll-smooth" oncontextmenu="return false;">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,12 +9,71 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
       (function() {
-        // Block right click immediately before page parse
-        document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; }, true);
-        // Neutralize console output immediately
+        // 1. Block right click immediately at window and document levels
+        var blockContext = function(e) {
+          if (e) {
+            if (e.preventDefault) e.preventDefault();
+            if (e.stopPropagation) e.stopPropagation();
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+          }
+          return false;
+        };
+
+        window.oncontextmenu = blockContext;
+        document.oncontextmenu = blockContext;
+        window.addEventListener('contextmenu', blockContext, true);
+        document.addEventListener('contextmenu', blockContext, true);
+
+        // Block mouse secondary button (right click) on mousedown and mouseup as well
+        var blockRightMouse = function(e) {
+          if (e && (e.button === 2 || e.which === 3)) {
+            if (e.preventDefault) e.preventDefault();
+            if (e.stopPropagation) e.stopPropagation();
+            return false;
+          }
+        };
+        window.addEventListener('mousedown', blockRightMouse, true);
+        document.addEventListener('mousedown', blockRightMouse, true);
+
+        // 2. Block inspection shortcuts immediately (F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+S)
+        var blockShortcuts = function(e) {
+          if (!e) return;
+          // ALLOW secret admin shortcut Ctrl + Alt + D
+          if ((e.ctrlKey || e.metaKey) && e.altKey && (e.key === 'd' || e.key === 'D' || e.code === 'KeyD' || e.keyCode === 68)) {
+            return;
+          }
+
+          // F12
+          if (e.key === 'F12' || e.keyCode === 123) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }
+
+          var hasMod = e.ctrlKey || e.metaKey;
+          var k = (e.key || '').toLowerCase();
+          if (hasMod) {
+            // View source Ctrl+U or Save Ctrl+S
+            if (k === 'u' || k === 's' || e.keyCode === 85 || e.keyCode === 83) {
+              e.preventDefault();
+              e.stopPropagation();
+              return false;
+            }
+            // DevTools Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C
+            if (e.shiftKey && (k === 'i' || k === 'j' || k === 'c' || e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+              e.preventDefault();
+              e.stopPropagation();
+              return false;
+            }
+          }
+        };
+        window.addEventListener('keydown', blockShortcuts, true);
+        document.addEventListener('keydown', blockShortcuts, true);
+
+        // 3. Neutralize console output immediately
         try {
           var noop = function() {};
-          var methods = ['log', 'debug', 'info', 'warn', 'error', 'dir', 'table', 'trace'];
+          var methods = ['log', 'debug', 'info', 'warn', 'error', 'dir', 'dirxml', 'table', 'trace', 'group', 'groupCollapsed', 'groupEnd', 'time', 'timeEnd', 'assert'];
           for (var i = 0; i < methods.length; i++) {
             try { console[methods[i]] = noop; } catch(err) {}
           }
@@ -22,9 +81,8 @@
       })();
     </script>
   </head>
-  <body class="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50 antialiased selection:bg-zinc-900 selection:text-white dark:selection:bg-white dark:selection:text-zinc-900 overflow-x-hidden">
+  <body class="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50 antialiased selection:bg-zinc-900 selection:text-white dark:selection:bg-white dark:selection:text-zinc-900 overflow-x-hidden" oncontextmenu="return false;">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-
