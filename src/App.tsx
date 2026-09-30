@@ -7,7 +7,7 @@ import { NavBar } from './components/NavBar';
 import { Hero } from './components/Hero';
 import { Projects } from './components/Projects';
 import { Skills } from './components/Skills';
-import { ShowcaseCarousel } from './components/ShowcaseCarousel';
+import { ShowcaseCarousel } from './components/ShowcaseSection';
 import { Testimonials } from './components/Testimonials';
 import { LegalStatus } from './components/LegalStatus';
 import { Contact } from './components/Contact';
