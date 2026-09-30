@@ -1,6 +1,5 @@
-import { Github, Linkedin, Twitter, Lock } from 'lucide-react';
+import { Github, Linkedin, Twitter } from 'lucide-react';
 import { useStore } from '../store';
-import { Link } from 'react-router-dom';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -38,9 +37,6 @@ export function Footer() {
               <Twitter className="w-5 h-5" />
             </a>
           )}
-          <Link to="/admin-nj" className="text-inherit opacity-60 hover:opacity-100 transition-opacity ml-4" aria-label="Administration">
-            <Lock className="w-4 h-4" />
-          </Link>
         </div>
       </div>
     </footer>

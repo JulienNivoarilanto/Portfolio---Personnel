@@ -47,6 +47,20 @@ export interface LegalInfo {
   address: string;
 }
 
+export interface CarouselItem {
+  id: string;
+  title: string;
+  description: string;
+  illustrationSvg: string;
+  order?: number;
+}
+
+export interface CarouselSettings {
+  enabled: boolean;
+  slideDuration: number; // in seconds
+  items: CarouselItem[];
+}
+
 export interface PersonalInfo {
   name: string;
   role: string;
@@ -73,6 +87,7 @@ export interface ThemeSettings {
 export interface SectionsVisibility {
   testimonials: boolean;
   legalStatus: boolean;
+  carousel?: boolean;
 }
 
 export interface SkillsSettings {
@@ -91,4 +106,5 @@ export interface SiteConfig {
   skillsSettings?: SkillsSettings;
   projectsSettings?: ProjectsSettings;
   projectsLayout?: ProjectsLayoutType;
+  carouselSettings?: CarouselSettings;
 }

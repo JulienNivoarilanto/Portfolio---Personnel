@@ -1,10 +1,13 @@
 import React, { Component, ErrorInfo, useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { signOut } from 'firebase/auth';
+import { auth } from './firebase';
 import { motion } from 'motion/react';
 import { NavBar } from './components/NavBar';
 import { Hero } from './components/Hero';
 import { Projects } from './components/Projects';
 import { Skills } from './components/Skills';
+import { ShowcaseCarousel } from './components/ShowcaseCarousel';
 import { Testimonials } from './components/Testimonials';
 import { LegalStatus } from './components/LegalStatus';
 import { Contact } from './components/Contact';
@@ -187,6 +190,7 @@ function PortfolioLayout() {
   const theme = siteConfig?.themeSettings?.activeTheme || 'default';
   const showTestimonials = siteConfig?.sectionsVisibility?.testimonials !== false;
   const showLegalStatus = siteConfig?.sectionsVisibility?.legalStatus !== false;
+  const showCarousel = siteConfig?.sectionsVisibility?.carousel !== false && siteConfig?.carouselSettings?.enabled !== false;
 
   const getThemeClasses = () => {
     switch (theme) {
@@ -219,6 +223,7 @@ function PortfolioLayout() {
         <Hero />
         <Projects />
         <Skills />
+        {showCarousel && <ShowcaseCarousel />}
         {showTestimonials && <Testimonials />}
         {showLegalStatus && <LegalStatus />}
         <Contact />
@@ -227,6 +232,42 @@ function PortfolioLayout() {
       <Footer />
     </div>
   );
+}
+
+function AdminShortcutAndSessionWatcher() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Raccourci clavier global : Ctrl + Alt + D (ou Cmd + Alt + D sur macOS)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isModifier = (e.ctrlKey || e.metaKey) && e.altKey;
+      if (isModifier && (e.key === 'd' || e.key === 'D' || e.code === 'KeyD')) {
+        e.preventDefault();
+        navigate('/admin-nj');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [navigate]);
+
+  // Fermer automatiquement la session si l'utilisateur quitte la page admin
+  useEffect(() => {
+    const isAdminRoute = location.pathname.startsWith('/admin-nj');
+    if (!isAdminRoute) {
+      const hasSession = sessionStorage.getItem('adminToken') || localStorage.getItem('adminToken');
+      if (hasSession || auth.currentUser) {
+        try {
+          sessionStorage.removeItem('adminToken');
+          localStorage.removeItem('adminToken');
+        } catch (e) {}
+        signOut(auth).catch(() => {});
+      }
+    }
+  }, [location.pathname]);
+
+  return null;
 }
 
 export default function App() {
@@ -238,6 +279,7 @@ export default function App() {
     <ErrorBoundary>
       <Toaster position="top-right" richColors />
       <Router>
+        <AdminShortcutAndSessionWatcher />
         <Routes>
           <Route path="/" element={<PortfolioLayout />} />
           <Route path="/admin-nj" element={<AdminLogin />} />

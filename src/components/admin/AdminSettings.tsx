@@ -6,7 +6,7 @@ import { Upload, Image as ImageIcon } from 'lucide-react';
 import { PersonalInfo } from '../../types';
 
 export function AdminSettings() {
-  const { siteConfig, updatePersonalInfo, updateThemeSettings, updateSectionsVisibility } = useStore();
+  const { siteConfig, updatePersonalInfo, updateThemeSettings, updateSectionsVisibility, updateCarouselSettings } = useStore();
   const safeSiteConfig = siteConfig || { personalInfo: {} as PersonalInfo, themeSettings: {} as any };
   const [formData, setFormData] = useState<Partial<PersonalInfo>>(safeSiteConfig.personalInfo || {});
   const [themeData, setThemeData] = useState(safeSiteConfig.themeSettings || { activeTheme: 'default' });
@@ -102,7 +102,29 @@ export function AdminSettings() {
             <h3 className="text-xl font-display font-semibold border-b border-zinc-200 dark:border-zinc-800 pb-4">Sections modulables du site</h3>
             <p className="text-sm opacity-70 mt-2">Activez ou masquez les sections optionnelles de la page d'accueil de votre portfolio (synchronisé avec le menu).</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-[#121214] flex items-center justify-between">
+              <div>
+                <p className="font-medium text-sm">Carrousel Illustré</p>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Section auto & grands SVG</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const current = siteConfig?.sectionsVisibility?.carousel !== false && siteConfig?.carouselSettings?.enabled !== false;
+                  updateSectionsVisibility({ carousel: !current });
+                  updateCarouselSettings({ enabled: !current });
+                }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition border ${
+                  siteConfig?.sectionsVisibility?.carousel !== false && siteConfig?.carouselSettings?.enabled !== false
+                    ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 border-transparent shadow-xs' 
+                    : 'bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700'
+                }`}
+              >
+                {siteConfig?.sectionsVisibility?.carousel !== false && siteConfig?.carouselSettings?.enabled !== false ? 'Active' : 'Désactivée'}
+              </button>
+            </div>
+
             <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-[#121214] flex items-center justify-between">
               <div>
                 <p className="font-medium text-sm">Section Témoignages</p>

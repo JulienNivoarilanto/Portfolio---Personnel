@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { Project, Skill, Testimonial, SiteConfig, ProjectsLayoutType } from './types';
+import { Project, Skill, Testimonial, SiteConfig, ProjectsLayoutType, CarouselItem, CarouselSettings } from './types';
 import { 
   projects as initialProjects, 
   skills as initialSkills, 
@@ -81,6 +81,12 @@ interface AppState {
   setProjectsLayout: (layout: ProjectsLayoutType) => Promise<void>;
   reorderSkills: (orderedSkills: Skill[]) => Promise<void>;
   updateCategoryOrder: (categoryOrder: string[]) => Promise<void>;
+
+  updateCarouselSettings: (updated: Partial<CarouselSettings>) => Promise<void>;
+  addCarouselItem: (item: Omit<CarouselItem, 'id'> & { id?: string }) => Promise<void>;
+  updateCarouselItem: (id: string, updated: Partial<CarouselItem>) => Promise<void>;
+  deleteCarouselItem: (id: string) => Promise<void>;
+  reorderCarouselItems: (items: CarouselItem[]) => Promise<void>;
 }
 
 export const useStore = create<AppState>()(
@@ -327,6 +333,102 @@ export const useStore = create<AppState>()(
         set({ siteConfig: newConfig });
         firestoreSaveSiteConfig(newConfig).catch((e) => {
           console.warn('[Firebase] Background update category order notice:', e);
+        });
+      },
+
+      updateCarouselSettings: async (updated) => {
+        const currentConfig = get().siteConfig || defaultSiteConfig;
+        const currentCarousel = currentConfig.carouselSettings || { enabled: true, slideDuration: 5, items: [] };
+        const newCarousel: CarouselSettings = {
+          ...currentCarousel,
+          ...updated,
+        };
+        const newConfig: SiteConfig = {
+          ...currentConfig,
+          carouselSettings: newCarousel,
+        };
+        set({ siteConfig: newConfig });
+        firestoreSaveSiteConfig(newConfig).catch((e) => {
+          console.warn('[Firebase] Background update carousel notice:', e);
+        });
+      },
+
+      addCarouselItem: async (item) => {
+        const currentConfig = get().siteConfig || defaultSiteConfig;
+        const currentCarousel = currentConfig.carouselSettings || { enabled: true, slideDuration: 5, items: [] };
+        const currentItems = currentCarousel.items || [];
+        const newItem: CarouselItem = {
+          id: item.id || `item_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+          title: item.title,
+          description: item.description,
+          illustrationSvg: item.illustrationSvg,
+          order: currentItems.length,
+        };
+        const newCarousel: CarouselSettings = {
+          ...currentCarousel,
+          items: [...currentItems, newItem]
+        };
+        const newConfig: SiteConfig = {
+          ...currentConfig,
+          carouselSettings: newCarousel
+        };
+        set({ siteConfig: newConfig });
+        firestoreSaveSiteConfig(newConfig).catch((e) => {
+          console.warn('[Firebase] Background add carousel item notice:', e);
+        });
+      },
+
+      updateCarouselItem: async (id, updated) => {
+        const currentConfig = get().siteConfig || defaultSiteConfig;
+        const currentCarousel = currentConfig.carouselSettings || { enabled: true, slideDuration: 5, items: [] };
+        const currentItems = currentCarousel.items || [];
+        const newCarousel: CarouselSettings = {
+          ...currentCarousel,
+          items: currentItems.map(item => item.id === id ? { ...item, ...updated } : item)
+        };
+        const newConfig: SiteConfig = {
+          ...currentConfig,
+          carouselSettings: newCarousel
+        };
+        set({ siteConfig: newConfig });
+        firestoreSaveSiteConfig(newConfig).catch((e) => {
+          console.warn('[Firebase] Background update carousel item notice:', e);
+        });
+      },
+
+      deleteCarouselItem: async (id) => {
+        const currentConfig = get().siteConfig || defaultSiteConfig;
+        const currentCarousel = currentConfig.carouselSettings || { enabled: true, slideDuration: 5, items: [] };
+        const currentItems = currentCarousel.items || [];
+        const newCarousel: CarouselSettings = {
+          ...currentCarousel,
+          items: currentItems.filter(item => item.id !== id)
+        };
+        const newConfig: SiteConfig = {
+          ...currentConfig,
+          carouselSettings: newCarousel
+        };
+        set({ siteConfig: newConfig });
+        firestoreSaveSiteConfig(newConfig).catch((e) => {
+          console.warn('[Firebase] Background delete carousel item notice:', e);
+        });
+      },
+
+      reorderCarouselItems: async (items) => {
+        const currentConfig = get().siteConfig || defaultSiteConfig;
+        const currentCarousel = currentConfig.carouselSettings || { enabled: true, slideDuration: 5, items: [] };
+        const indexed = items.map((item, idx) => ({ ...item, order: idx }));
+        const newCarousel: CarouselSettings = {
+          ...currentCarousel,
+          items: indexed
+        };
+        const newConfig: SiteConfig = {
+          ...currentConfig,
+          carouselSettings: newCarousel
+        };
+        set({ siteConfig: newConfig });
+        firestoreSaveSiteConfig(newConfig).catch((e) => {
+          console.warn('[Firebase] Background reorder carousel notice:', e);
         });
       },
     }),

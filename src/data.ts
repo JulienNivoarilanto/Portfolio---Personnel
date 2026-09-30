@@ -33,6 +33,12 @@ export const defaultSiteConfig: SiteConfig = {
   sectionsVisibility: {
     testimonials: false,
     legalStatus: true,
+    carousel: true,
+  },
+  carouselSettings: {
+    enabled: true,
+    slideDuration: 5,
+    items: [],
   }
 };
 

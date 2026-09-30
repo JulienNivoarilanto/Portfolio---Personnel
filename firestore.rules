@@ -23,6 +23,11 @@ service cloud.firestore {
       allow read, write: if true;
     }
 
+    // Contact messages
+    match /messages/{messageId} {
+      allow read, write: if true;
+    }
+
     // Global Configuration
     match /config/{configId} {
       allow read, write: if true;

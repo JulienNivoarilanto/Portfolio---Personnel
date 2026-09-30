@@ -303,3 +303,54 @@ export async function firestoreBatchUpdateSkillOrders(skillOrders: { id: string;
   await safeFirestoreWrite(batch.commit());
 }
 
+export interface ContactMessage {
+  id?: string;
+  name: string;
+  email: string;
+  message: string;
+  createdAt: string;
+  read?: boolean;
+}
+
+export async function firestoreSendMessage(msg: { name: string; email: string; message: string }): Promise<string> {
+  const docId = `msg_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+  const payload = sanitizeForFirestore({
+    id: docId,
+    name: msg.name,
+    email: msg.email,
+    message: msg.message,
+    createdAt: new Date().toISOString(),
+    read: false,
+  });
+  await safeFirestoreWrite(setDoc(doc(db, 'messages', docId), payload));
+  return docId;
+}
+
+export function subscribeToMessages(onUpdate: (messages: ContactMessage[]) => void): Unsubscribe {
+  return onSnapshot(collection(db, 'messages'), (snapshot) => {
+    const list: ContactMessage[] = [];
+    snapshot.forEach((docSnap) => {
+      const data = docSnap.data() as any;
+      list.push({
+        ...data,
+        id: docSnap.id
+      });
+    });
+    list.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+    onUpdate(list);
+  }, (err) => {
+    console.warn('[Firebase] Messages sync error:', err);
+  });
+}
+
+export async function firestoreDeleteMessage(id: string): Promise<void> {
+  if (!id) return;
+  await safeFirestoreWrite(deleteDoc(doc(db, 'messages', id)));
+}
+
+export async function firestoreMarkMessageAsRead(id: string, read = true): Promise<void> {
+  if (!id) return;
+  await safeFirestoreWrite(setDoc(doc(db, 'messages', id), { read, updatedAt: new Date().toISOString() }, { merge: true }));
+}
+
+
