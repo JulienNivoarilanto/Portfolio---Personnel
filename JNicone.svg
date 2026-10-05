@@ -1,0 +1,62 @@
+<svg xmlns="http://w3.org" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Dégradé Rock électrique cyan/violet haute intensité -->
+    <linearGradient id="rock-clean-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#9d4edd" />
+      <stop offset="50%" stop-color="#00b4d8" />
+      <stop offset="100%" stop-color="#52ffeb" />
+    </linearGradient>
+  </defs>
+
+  <!-- L'arrière-plan <rect> a été supprimé pour garantir la transparence totale -->
+
+  <g transform="translate(-10, 0)">
+    <!-- 1. LA BORDURE EXTÉRIEURE NETTE ET ULTRA-DISTINCTE -->
+    <path 
+      d="M 95 100 
+         L 245 100 
+         L 230 190 
+         L 330 100 
+         L 445 100 
+         L 375 420 
+         L 275 420 
+         L 315 220 
+         L 225 340 
+         L 220 310 
+         L 135 420 
+         L 25 420 
+         L 55 340 
+         L 105 340 
+         L 165 170 
+         L 115 170 
+         Z" 
+      fill="none" 
+      stroke="#18002a" 
+      stroke-width="36" 
+      stroke-linejoin="miter" 
+      stroke-miterlimit="4"
+    />
+
+    <!-- 2. LES LETTRES REMPLIES AVEC LE J À SA PLEINE TAILLE -->
+    <path 
+      d="M 95 100 
+         L 245 100 
+         L 230 190 
+         L 330 100 
+         L 445 100 
+         L 375 420 
+         L 275 420 
+         L 315 220 
+         L 225 340 
+         L 220 310 
+         L 135 420 
+         L 25 420 
+         L 55 340 
+         L 105 340 
+         L 165 170 
+         L 115 170 
+         Z" 
+      fill="url(#rock-clean-grad)"
+    />
+  </g>
+</svg>
